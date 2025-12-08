@@ -269,7 +269,12 @@ public:
         }
     }
 
-    int* find(int car_number) {
+    struct Find_Result {
+        int lot;
+        int level;
+    };
+
+    Find_Result find(int car_number) {
         for (int i = 0; i < number_of_lots; ++i) {
             Stack temp(lot_capacity);
             temp.copy_stack(parking_lots[i]);
@@ -277,14 +282,12 @@ public:
             while (temp.get_size() > 0) {
                 cnt++;
                 if (temp.pop() == car_number) {
-                    static int find_lot[2] = {i, cnt};
-                    return find_lot;
+                    return {i, cnt};
                 }
             }
         }
         cout << "Car not found in any parking lot." << endl;
-        static int find_lot[2] = {-1, -1};
-        return find_lot;
+        return {-1, -1};
     }
 
     bool remove_car_at_top(int car_number) {
@@ -294,8 +297,8 @@ public:
                 return true;
             }
         }
-        if (find(car_number)[0] >= 0) {
-            cout << "The car is not of the above the parking lot area, and exiting from there is not possible." << endl;
+        if (find(car_number).lot >= 0) {
+            cout << "The car " << car_number << " is not of the above the parking lot area, and exiting from there is not possible." << endl;
             return false;
         }
         return false;
@@ -315,9 +318,20 @@ public:
             cout << "Invalid parking lot index." << endl;
             return;
         }
+        int flag = to_lot;
         while (parking_lots[from_lot].get_size() > 0) {
             if (parking_lots[to_lot].get_size() >= lot_capacity) {
                 to_lot = (to_lot + 1) % number_of_lots;
+                if (to_lot == flag) {
+                    if (parking_lots[from_lot].get_size() > 0) {
+                        cout << "Parking is full so the car from spot " << from_lot << " can not be moved." <<endl;
+                    }
+                    return;
+                }
+                if (to_lot == from_lot) {
+                    to_lot++;
+                    continue;
+                }
             }
             int car_ID = parking_lots[from_lot].pop();
             parking_lots[to_lot].push(car_ID);
@@ -334,18 +348,34 @@ public:
 
 
 int main() {
-    Stack s(5);
-    s.push(4);
-    s.push(1);
-    s.push(2);
-    s.push(3);
-    s.print_stack();
-    Stack temp(5);
-    temp.copy_stack(s);
-    temp.pop();
-    temp.print_stack();
-    s.print_stack();
-    s = s.merge_sort_stack(s);
-    s.print_stack();
+    parking p1(3, 3);
+    p1.car_arrival(11);
+    p1.car_arrival(12);
+    p1.car_arrival(13);
+    p1.park_car(0);
+    p1.park_car();
+    p1.park_car(2);
+    p1.car_arrival(14);
+    p1.car_arrival(15);
+    p1.park_car(0);
+    p1.park_car();
+    p1.print_parking();
+    parking::Find_Result r1 = p1.find(11);
+    cout << r1.lot << " " << r1.level << endl;
+    parking::Find_Result r2 = p1.find(13);
+    cout << r2.lot << " " << r2.level << endl;
+    p1.sorting_parking_i(0);
+    p1.print_parking();
+    p1.remove_car_at_top(14);
+    p1.remove_car_at_top(11);
+    p1.car_arrival(11);
+    p1.park_car(0);
+    p1.car_arrival(16);
+    p1.car_arrival(17);
+    p1.park_car();
+    p1.park_car();
+    p1.print_parking();
+    p1.relocate(0, 2);
+    p1.print_parking();
     return 0;
 }
