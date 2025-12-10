@@ -243,10 +243,18 @@ public:
         waiting_queue.enqueue(c.get_car_number());
     }
 
+    bool isFull() {   // O(n)
+        for (int i = 0; i < number_of_lots; ++i) {
+            if (parking_lots[i].get_size() < lot_capacity) return false;
+        }
+        return true;
+    }
+
     void park_car(int lot_index = -1) {   // worse case: O(n) n is number_of_lots
         if (lot_index >= 0 && lot_index < number_of_lots) {
             if (parking_lots[lot_index].get_size() == lot_capacity) {
                 cout << "The parking lot " << lot_index << " is full" << endl;
+                return;
             }
             int car_ID = waiting_queue.dequeue();
             if (car_ID == -1) {
@@ -269,6 +277,16 @@ public:
         }
     }
 
+    void park_all_car() {   //O(k*n) k->number of car in waiting_queue
+        while(waiting_queue.get_size()) {
+            if (!isFull()) park_car();
+            else {
+                cout << "All parking lots are full." << endl;
+                break;
+            }
+        }
+    }
+
     struct Find_Result {
         int lot;
         int level;
@@ -286,7 +304,7 @@ public:
                 }
             }
         }
-        cout << "Car not found in any parking lot." << endl;
+        cout << "Car " << car_number << " not found in any parking lot." << endl;
         return {-1, -1};
     }
 
@@ -330,11 +348,19 @@ public:
                 }
                 if (to_lot == from_lot) {
                     to_lot++;
+                    if (to_lot == flag) {
+                        if (parking_lots[from_lot].get_size() > 0) {
+                            cout << "Parking is full so the car from spot " << from_lot << " can not be moved." <<endl;
+                        }
+                        return;
+                    }
                     continue;
                 }
             }
-            int car_ID = parking_lots[from_lot].pop();
-            parking_lots[to_lot].push(car_ID);
+            else {
+                int car_ID = parking_lots[from_lot].pop();
+                parking_lots[to_lot].push(car_ID);
+            }
         }
     }
 
@@ -348,34 +374,44 @@ public:
 
 
 int main() {
-    Parking p1(3, 3);
-    p1.car_arrival(11);
-    p1.car_arrival(12);
-    p1.car_arrival(13);
-    p1.park_car(0);
-    p1.park_car();
-    p1.park_car(2);
-    p1.car_arrival(14);
-    p1.car_arrival(15);
-    p1.park_car(0);
+    Parking p1(7, 10);
+    for (int i = 101; i < 143 ; ++i) {
+        p1.car_arrival(i);
+        int idx = i % 7;
+        p1.park_car(idx);
+    }
+    p1.print_parking();
+    Parking::Find_Result r1 = p1.find(123);
+    cout << "Car123: on stack " << r1.lot << " level is " << r1.level << endl;
+    Parking::Find_Result r2 = p1.find(150);
+    for (int i = 150; i < 160; i++) {
+        p1.car_arrival(i);
+        p1.park_car(0);
+    }
+    p1.print_parking();
+    cout << "______________________" << endl;
+    p1.park_all_car();
+    p1.print_parking();
+    p1.remove_car_at_top(153);
+    p1.remove_car_at_top(101);
+    p1.remove_car_at_top(200);
+    p1.print_parking();
+    cout << "________________________" << endl;
+    p1.sorting_parking_i(1);
+    p1.print_parking();
+    cout << "________________________" << endl;
+    p1.relocate(0, 1);
+    p1.print_parking();
+    cout << "_________________________" << endl;
+    for (int i = 201; i < 250; ++i) {
+        p1.car_arrival(i);
+    }
+    p1.park_all_car();
     p1.park_car();
     p1.print_parking();
-    Parking::Find_Result r1 = p1.find(11);
-    cout << r1.lot << " " << r1.level << endl;
-    Parking::Find_Result r2 = p1.find(13);
-    cout << r2.lot << " " << r2.level << endl;
-    p1.sorting_parking_i(0);
-    p1.print_parking();
-    p1.remove_car_at_top(14);
-    p1.remove_car_at_top(11);
-    p1.car_arrival(11);
-    p1.park_car(0);
-    p1.car_arrival(16);
-    p1.car_arrival(17);
-    p1.park_car();
-    p1.park_car();
-    p1.print_parking();
-    p1.relocate(0, 2);
+    cout << "_________________________" << endl;
+    p1.relocate(0, 1);
+    p1.sorting_parking_i(4);
     p1.print_parking();
     return 0;
 }
