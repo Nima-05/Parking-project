@@ -10,7 +10,7 @@ private:
     Node* next;
 
 public:
-    Node(int value) : next(nullptr), val(value) {}
+    Node(int value) : next(nullptr), val(value) {} // every function O(1)
 
     void setVal(int value) {val = value;}
 
@@ -39,7 +39,7 @@ public:
 
     int get_size() {return size;}
 
-    void add_front(int data) {
+    void add_front(int data) {   // O(1)
         Node* new_node = new Node(data);
         if (head == nullptr) {
             head = new_node;
@@ -52,7 +52,7 @@ public:
         size++;
     }
 
-    void remove_front() {
+    void remove_front() {   //O(1)
         if (head == nullptr) return;
         Node* temp = head;
         head = head->getNext();
@@ -63,7 +63,7 @@ public:
         }
     }
 
-    void add_end(int data) {
+    void add_end(int data) {   //O(1)
         Node* new_node = new Node(data);
         if (head == nullptr) {
             head = new_node;
@@ -92,7 +92,7 @@ public:
         return list.get_size();
     }
 
-    int peek() {
+    int peek() {   // O(1)
         if (list.get_size() == 0) {
             cout << "Stack is empty" << endl;
             return -1;
@@ -100,7 +100,7 @@ public:
         return list.get_head()->getVal();
     }
 
-    void push(int data) {
+    void push(int data) {   // O(1)
         if (list.get_size() >= current_size) {
             cout << "Stack Overflow" << endl;
             return;
@@ -108,7 +108,7 @@ public:
         list.add_front(data);
     }
 
-    int pop() {
+    int pop() {   // O(1)
         if (list.get_size() == 0) {
             cout << "Stack Underflow" << endl;
             return -1;
@@ -118,7 +118,7 @@ public:
         return val;
     }
 
-    void copy_stack(Stack& other) {
+    void copy_stack(Stack& other) {   // O(n^2) n is number of data in stack
         Stack temp(current_size);
         Node* cur = other.list.get_head();
         while (cur != nullptr) {
@@ -130,7 +130,7 @@ public:
         }
     }
 
-    Stack merge_sort_stack(Stack s) {
+    Stack merge_sort_stack(Stack s) {   // O(nlogn)
         if (s.get_size() <= 1) {
             return s;
         }
@@ -148,7 +148,7 @@ public:
         return merge(left, right);
     }
 
-    Stack merge(Stack& left, Stack& right) {
+    Stack merge(Stack& left, Stack& right) {  // O(m+n) ~ O(n)
         Stack result(current_size);
         while (left.get_size() > 0 && right.get_size() > 0) {
             if (left.peek() <= right.peek()) {
@@ -171,7 +171,7 @@ public:
         return final_stack;
     }
 
-    void print_stack() {
+    void print_stack() {   // O(n^2) (copy_stack is O(n^2))
         Stack temp(current_size);
         temp.copy_stack(*this);
         while (temp.get_size() > 0) {
@@ -190,15 +190,15 @@ private:
 public:
     Queue() {}
 
-    int get_size() {
+    int get_size() {  // O(1)
         return list.get_size();
     }
 
-    void enqueue(int data) {
+    void enqueue(int data) {   // O(1)
         list.add_end(data);
     }
 
-    int dequeue() {
+    int dequeue() {   // O(1)
         if (list.get_size() == 0) {
             cout << "Queue Underflow" << endl;
             return -1;
@@ -213,37 +213,37 @@ public:
 
 
 
-class car {
+class Car {
 private:
     int car_number;
 
 public:
-    car(int number) : car_number(number) {}
+    Car(int number) : car_number(number) {}
 
     int get_car_number() {return car_number;}
 };
 
 
 
-class parking {
+class Parking {
     vector<Stack> parking_lots;
     Queue waiting_queue;
     int number_of_lots;   //n
     int lot_capacity;   //m
 
 public:
-    parking(int num_lots, int lot_cap) : number_of_lots(num_lots), lot_capacity(lot_cap) {
+    Parking(int num_lots, int lot_cap) : number_of_lots(num_lots), lot_capacity(lot_cap) {   // O(n) n is number_of_lots
         for (int i = 0; i < number_of_lots; i++) {
             Stack lot(lot_capacity);
             parking_lots.push_back(lot);
         }
     }
 
-    void car_arrival(car c) {
+    void car_arrival(Car c) {   // O(1)
         waiting_queue.enqueue(c.get_car_number());
     }
 
-    void park_car(int lot_index = -1) {
+    void park_car(int lot_index = -1) {   // worse case: O(n) n is number_of_lots
         if (lot_index >= 0 && lot_index < number_of_lots) {
             if (parking_lots[lot_index].get_size() == lot_capacity) {
                 cout << "The parking lot " << lot_index << " is full" << endl;
@@ -274,12 +274,12 @@ public:
         int level;
     };
 
-    Find_Result find(int car_number) {
-        for (int i = 0; i < number_of_lots; ++i) {
+    Find_Result find(int car_number) {   // worstcase: O(n*m^3)
+        for (int i = 0; i < number_of_lots; ++i) {   //O(n) n->number_of_lots
             Stack temp(lot_capacity);
-            temp.copy_stack(parking_lots[i]);
+            temp.copy_stack(parking_lots[i]);   //O(m^2) m->lot_capacity
             int cnt = 0;
-            while (temp.get_size() > 0) {
+            while (temp.get_size() > 0) {   //O(m)
                 cnt++;
                 if (temp.pop() == car_number) {
                     return {i, cnt};
@@ -290,30 +290,30 @@ public:
         return {-1, -1};
     }
 
-    bool remove_car_at_top(int car_number) {
-        for (int i = 0; i < number_of_lots; ++i) {
+    bool remove_car_at_top(int car_number) {   //worstcase: O(n*m^3)
+        for (int i = 0; i < number_of_lots; ++i) {   //O(n)
             if (parking_lots[i].get_size() > 0 && parking_lots[i].peek() == car_number) {
                 parking_lots[i].pop();
                 return true;
             }
         }
-        if (find(car_number).lot >= 0) {
+        if (find(car_number).lot >= 0) {   //O(n*m^3)
             cout << "The car " << car_number << " is not of the above the parking lot area, and exiting from there is not possible." << endl;
             return false;
         }
         return false;
     }
 
-    void sorting_parking_i(int lot_index) {
+    void sorting_parking_i(int lot_index) {   //O(m*logm)
         if (lot_index < 0 || lot_index >= number_of_lots) {
             cout << "Invalid parking lot index." << endl;
             return;
         }
-        Stack sorted_stack = parking_lots[lot_index].merge_sort_stack(parking_lots[lot_index]);
+        Stack sorted_stack = parking_lots[lot_index].merge_sort_stack(parking_lots[lot_index]);   //O(m*logm) m->lot_capacity
         parking_lots[lot_index] = sorted_stack;
     }
 
-    void relocate(int from_lot, int to_lot) {
+    void relocate(int from_lot, int to_lot) {   //worstcase: O(m*n) 
         if (from_lot < 0 || from_lot >= number_of_lots || to_lot < 0 || to_lot >= number_of_lots) {
             cout << "Invalid parking lot index." << endl;
             return;
@@ -338,17 +338,17 @@ public:
         }
     }
 
-    void print_parking() {
-        for (int i = 0; i < number_of_lots; i++) {
+    void print_parking() {  // O(m^2 * n)
+        for (int i = 0; i < number_of_lots; i++) {  // O(n)
             cout << "Parking Lot " << i << ": ";
-            parking_lots[i].print_stack();
+            parking_lots[i].print_stack();  // O(m^2)
         }
     }
 };
 
 
 int main() {
-    parking p1(3, 3);
+    Parking p1(3, 3);
     p1.car_arrival(11);
     p1.car_arrival(12);
     p1.car_arrival(13);
@@ -360,9 +360,9 @@ int main() {
     p1.park_car(0);
     p1.park_car();
     p1.print_parking();
-    parking::Find_Result r1 = p1.find(11);
+    Parking::Find_Result r1 = p1.find(11);
     cout << r1.lot << " " << r1.level << endl;
-    parking::Find_Result r2 = p1.find(13);
+    Parking::Find_Result r2 = p1.find(13);
     cout << r2.lot << " " << r2.level << endl;
     p1.sorting_parking_i(0);
     p1.print_parking();
