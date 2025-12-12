@@ -118,7 +118,7 @@ public:
         return val;
     }
 
-    void copy_stack(Stack& other) {   // O(n^2) n is number of data in stack
+    void copy_stack(Stack& other) {   // O(n) n is number of data in stack
         Stack temp(current_size);
         Node* cur = other.list.get_head();
         while (cur != nullptr) {
@@ -374,44 +374,85 @@ public:
 
 
 int main() {
-    Parking p1(7, 10);
-    for (int i = 101; i < 143 ; ++i) {
-        p1.car_arrival(i);
-        int idx = i % 7;
-        p1.park_car(idx);
+    int n, m;
+    cout << "Enter number of parking lots: ";
+    cin >> n;
+    cout << "Enter capacity of each lot: ";
+    cin >> m;
+
+    Parking P(n, m);
+
+    while (true) {
+        cout << "\n===== Parking System UI =====\n";
+        cout << "1. Car arrival\n";
+        cout << "2. Park next car\n";
+        cout << "3. Park all cars\n";
+        cout << "4. Remove car at top\n";
+        cout << "5. Find car\n";
+        cout << "6. Sort a parking lot\n";
+        cout << "7. Relocate cars\n";
+        cout << "8. Print parking\n";
+        cout << "9. Exit\n";
+        cout << "Choose: ";
+
+        int choice;
+        cin >> choice;
+
+        if (choice == 1) {
+            int car_id;
+            cout << "Enter car number: ";
+            cin >> car_id;
+            P.car_arrival(Car(car_id));
+            cout << "Car added to waiting queue.\n";
+        }
+        else if (choice == 2) {
+            int lot;
+            cout << "Enter lot index (-1 for auto): ";
+            cin >> lot;
+            P.park_car(lot);
+        }
+        else if (choice == 3) {
+            P.park_all_car();
+        }
+        else if (choice == 4) {
+            int car_id;
+            cout << "Enter car number to remove: ";
+            cin >> car_id;
+            if (P.remove_car_at_top(car_id))
+                cout << "Removed successfully.\n";
+        }
+        else if (choice == 5) {
+            int car_id;
+            cout << "Enter car number to find: ";
+            cin >> car_id;
+            auto result = P.find(car_id);
+            if (result.lot >= 0)
+                cout << "Found in lot " << result.lot << ", level " << result.level << endl;
+        }
+        else if (choice == 6) {
+            int lot;
+            cout << "Enter lot index: ";
+            cin >> lot;
+            P.sorting_parking_i(lot);
+        }
+        else if (choice == 7) {
+            int fromL, toL;
+            cout << "Move cars FROM lot: ";
+            cin >> fromL;
+            cout << "TO lot: ";
+            cin >> toL;
+            P.relocate(fromL, toL);
+        }
+        else if (choice == 8) {
+            P.print_parking();
+        }
+        else if (choice == 9) {
+            cout << "Exiting...\n";
+            break;
+        }
+        else {
+            cout << "Invalid choice!\n";
+        }
     }
-    p1.print_parking();
-    Parking::Find_Result r1 = p1.find(123);
-    cout << "Car123: on stack " << r1.lot << " level is " << r1.level << endl;
-    Parking::Find_Result r2 = p1.find(150);
-    for (int i = 150; i < 160; i++) {
-        p1.car_arrival(i);
-        p1.park_car(0);
-    }
-    p1.print_parking();
-    cout << "______________________" << endl;
-    p1.park_all_car();
-    p1.print_parking();
-    p1.remove_car_at_top(153);
-    p1.remove_car_at_top(101);
-    p1.remove_car_at_top(200);
-    p1.print_parking();
-    cout << "________________________" << endl;
-    p1.sorting_parking_i(1);
-    p1.print_parking();
-    cout << "________________________" << endl;
-    p1.relocate(0, 1);
-    p1.print_parking();
-    cout << "_________________________" << endl;
-    for (int i = 201; i < 250; ++i) {
-        p1.car_arrival(i);
-    }
-    p1.park_all_car();
-    p1.park_car();
-    p1.print_parking();
-    cout << "_________________________" << endl;
-    p1.relocate(0, 1);
-    p1.sorting_parking_i(4);
-    p1.print_parking();
     return 0;
 }
